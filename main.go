@@ -1,11 +1,12 @@
 package main
 
-import "OnLife/grid"
+import "OnLife/world"
 
 func main() {
-	var grid grid.Grid
+	world := world.NewWord(world.GridSize, world.GridSize)
+	grid := world.Grid
 
-	grid.InitializeDefaultGrid()
+	grid.InitializeRandomGrid()
 	for range 5 {
 		grid.Print()
 		grid.Update()
