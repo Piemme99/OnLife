@@ -1,0 +1,7 @@
+# Executables
+OnLife
+
+# Go build artifacts
+*.exe
+*.test
+*.out
