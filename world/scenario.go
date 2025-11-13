@@ -102,7 +102,7 @@ func runeToCell(r rune, fireLifetime int) (Cell, error) {
 		return Cell{Type: Water}, nil
 	case 'L':
 		return Cell{Type: Life}, nil
-	case 'F', '🔥':
+	case 'F':
 		cell := NewCell(Fire)
 		if fireLifetime > 0 {
 			cell.State = fireLifetime
