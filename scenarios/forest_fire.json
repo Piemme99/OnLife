@@ -1,0 +1,16 @@
+{
+  "name": "forest_fire",
+  "description": "Dense prairie with a vertical water break and two ignition points.",
+  "rows": [
+    "GGGGGGGGGG",
+    "GGGGGGGGGG",
+    "GGGGWGGGGG",
+    "GGGGWGGGGG",
+    "GGF.WGGGGG",
+    "GG..W..GGG",
+    "GGGGWGGGGG",
+    "GGGGWGGGGG",
+    "GGGGWGGGGF",
+    "GGGGGGGGGG"
+  ]
+}

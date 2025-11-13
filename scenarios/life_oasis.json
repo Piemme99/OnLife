@@ -1,0 +1,14 @@
+{
+  "name": "life_oasis",
+  "description": "Life glider growing near a shallow water pool with a distant fire source.",
+  "rows": [
+    ".WWW....",
+    ".W..L..F",
+    ".W.LL...",
+    ".W..L...",
+    "........",
+    "..L.L...",
+    "...LL...",
+    "........"
+  ]
+}

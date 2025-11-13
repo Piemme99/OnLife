@@ -5,36 +5,57 @@ import "fmt"
 
 const GridSize = 5
 
-// TODO: Grid should be 1D for performances
-type Grid [][]CellType
+type Grid [][]Cell
 
 func NewGrid(width, height int) (grid Grid) {
 	grid = make(Grid, height)
 
 	for i := range grid {
-		grid[i] = make([]CellType, width)
+		grid[i] = make([]Cell, width)
 	}
 	return grid
 }
 
-// TODO:  Redo Update
 func (grid *Grid) Update() {
-	updatedGrid := NewGrid(GridSize, GridSize)
-	for line, row := range *grid {
-		for column, cell := range row {
-			switch cell {
-			case Empty:
-				updatedGrid[line][column] = cell
-			case Fire:
-				updatedGrid[line][column] = cell
-			case Grass:
-				if grid.hasFireNeigbour(line, column) {
-					updatedGrid[line][column] = Fire
-				} else {
-					updatedGrid[line][column] = cell
-				}
+	if grid == nil {
+		return
+	}
+	current := *grid
+	if len(current) == 0 {
+		return
+	}
+	height := len(current)
+	width := len(current[0])
+	updatedGrid := NewGrid(width, height)
+
+	for y := range height {
+		for x := range width {
+			cell := current[y][x]
+			switch cell.Type {
+			case Rock, Life:
+				lifeNeighbors := current.countLifeNeighbors(x, y)
+				updatedGrid[y][x] = applyLifeRules(cell, lifeNeighbors)
 			case Water:
-				updatedGrid[line][column] = cell
+				updatedGrid[y][x] = cell
+			case Grass:
+				if current.hasAdjacentType(x, y, Fire) {
+					updatedGrid[y][x] = NewCell(Fire)
+				} else {
+					updatedGrid[y][x] = cell
+				}
+			case Fire:
+				if current.hasAdjacentType(x, y, Water) {
+					updatedGrid[y][x] = Cell{Type: Rock}
+					continue
+				}
+				remaining := cell.State - 1
+				if remaining <= 0 {
+					updatedGrid[y][x] = Cell{Type: Rock}
+				} else {
+					updatedGrid[y][x] = Cell{Type: Fire, State: remaining}
+				}
+			default:
+				updatedGrid[y][x] = cell
 			}
 		}
 	}
@@ -44,7 +65,7 @@ func (grid *Grid) Update() {
 func (grid Grid) InitializeRandomGrid() {
 	for line, row := range grid {
 		for column := range row {
-			grid[line][column] = RandomCell()
+			grid[line][column] = NewCell(RandomCellType())
 		}
 	}
 }
@@ -52,9 +73,7 @@ func (grid Grid) InitializeRandomGrid() {
 func (grid Grid) Print() {
 	for _, row := range grid {
 		for _, cell := range row {
-			switch cell {
-			case Empty:
-				fmt.Print("⚪")
+			switch cell.Type {
 			case Fire:
 				fmt.Print("🔥")
 			case Grass:
@@ -72,9 +91,76 @@ func (grid Grid) Print() {
 	fmt.Println()
 }
 
-func (grid Grid) hasFireNeigbour(x int, y int) bool {
-	if grid[y+1][x] == Fire || grid[y-1][x] == Fire || grid[y][x+1] == Fire || grid[y][x-1] == Fire {
-		return true
+func (grid Grid) hasAdjacentType(x, y int, target CellType) bool {
+	found := false
+	grid.forEachNeighbor(x, y, func(nx, ny int) {
+		if grid[ny][nx].Type == target {
+			found = true
+		}
+	})
+	return found
+}
+
+func applyLifeRules(cell Cell, lifeNeighbors int) Cell {
+	switch cell.Type {
+	case Life:
+		if lifeNeighbors == 2 || lifeNeighbors == 3 {
+			return cell
+		}
+		return Cell{Type: Rock}
+	case Rock:
+		if lifeNeighbors == 3 {
+			return Cell{Type: Life}
+		}
 	}
-	return false
+	return cell
+}
+
+func (grid Grid) countLifeNeighbors(x, y int) int {
+	if len(grid) == 0 {
+		return 0
+	}
+	count := 0
+	directions := [8][2]int{
+		{-1, -1},
+		{0, -1},
+		{1, -1},
+		{-1, 0},
+		{1, 0},
+		{-1, 1},
+		{0, 1},
+		{1, 1},
+	}
+	for _, dir := range directions {
+		nx := x + dir[0]
+		ny := y + dir[1]
+		if ny < 0 || ny >= len(grid) {
+			continue
+		}
+		if nx < 0 || nx >= len(grid[ny]) {
+			continue
+		}
+		if grid[ny][nx].Type == Life {
+			count++
+		}
+	}
+	return count
+}
+
+func (grid Grid) forEachNeighbor(x, y int, fn func(nx, ny int)) {
+	if len(grid) == 0 {
+		return
+	}
+	directions := [][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}
+	for _, dir := range directions {
+		nx := x + dir[0]
+		ny := y + dir[1]
+		if ny < 0 || ny >= len(grid) {
+			continue
+		}
+		if nx < 0 || nx >= len(grid[ny]) {
+			continue
+		}
+		fn(nx, ny)
+	}
 }

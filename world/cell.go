@@ -5,18 +5,28 @@ import "math/rand"
 type CellType byte
 
 type Cell struct {
-	cellType CellType
+	Type  CellType
+	State int
 }
 
 const (
-	Empty CellType = iota
-	Grass
+	Grass CellType = iota
 	Fire
 	Water
 	Rock
 	Life
 )
 
-func RandomCell() (cell CellType) {
+const DefaultFireLifetime = 3
+
+func NewCell(cellType CellType) Cell {
+	cell := Cell{Type: cellType}
+	if cellType == Fire {
+		cell.State = DefaultFireLifetime
+	}
+	return cell
+}
+
+func RandomCellType() CellType {
 	return CellType(rand.Intn(int(Life) + 1))
 }

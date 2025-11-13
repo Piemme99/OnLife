@@ -1,0 +1,10 @@
+{
+  "name": "glider",
+  "description": "Simple Life glider for testing",
+  "rows": [
+    "....",
+    ".L..",
+    "..LL",
+    ".LL."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "ring_of_fire",
+  "description": "Fire trapped inside a water moat with pockets of life waiting to reoccupy the ashes.",
+  "rows": [
+    "WWWWWWWWWWWW",
+    "W..GGGGGG..W",
+    "W..GFFFFG..W",
+    "W..GGGGGG..W",
+    "W..GLLLGG..W",
+    "WWWWWWWWWWWW"
+  ]
+}
